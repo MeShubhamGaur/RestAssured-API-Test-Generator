@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RestAssured API Test Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            margin-top: 40px;
+            margin-bottom: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 30px 40px;
+            width: 500px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #0078d7;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"], select, textarea, input[type="number"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        input[type="text"]:focus, select:focus, textarea:focus, input[type="number"]:focus, input[type="password"]:focus {
+            border-color: #0078d7;
+            outline: none;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: monospace;
+        }
+
+        .key-value-section {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            background-color: #fafafa;
+        }
+
+        .key-value-pair {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .key-value-pair input {
+            flex: 1;
+            margin: 0;
+        }
+
+        .remove-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .remove-btn:hover {
+            background-color: #c82333;
+        }
+
+        .add-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .auth-fields {
+            margin-top: 10px;
+        }
+
+        .auth-fields input {
+            margin-bottom: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .schema-upload {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .schema-upload input[type="file"] {
+            display: none;
+        }
+
+        .upload-label {
+            margin-left: 10px;
+            color: #007BFF;
+            text-decoration: underline;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .upload-label.disabled {
+            color: gray;
+            text-decoration: none;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        button.submit-btn {
+            width: 100%;
+            margin-top: 25px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button.submit-btn:hover {
+            background-color: #218838;
+        }
+
+        button.submit-btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .form-group {
+            margin-top: 15px;
+        }
+
+        .message {
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>RestAssured API Test Generator</h1>
+
+        <label for="method">HTTP Method:</label>
+        <select id="method">
+            <option value="">&lt;Please Select&gt;</option>
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="PATCH">PATCH</option>
+            <option value="DELETE">DELETE</option>
+        </select>
+
+        <label for="endpoint">Endpoint URL:</label>
+        <input type="text" id="endpoint" placeholder="Enter API endpoint URL">
+
+        <!-- Params Section -->
+        <label for="params">Query Parameters (Optional):</label>
+        <div class="key-value-section" id="paramsSection">
+            <div class="key-value-pair">
+                <input type="text" placeholder="Key" class="param-key">
+                <input type="text" placeholder="Value" class="param-value">
+                <button type="button" class="remove-btn" onclick="removeParam(this)">Remove</button>
+            </div>
+        </div>
+        <button type="button" class="add-btn" onclick="addParam()">+ Add Parameter</button>
+
+        <!-- Authorization Section -->
+        <label for="authType">Authorization (Optional):</label>
+        <select id="authType">
+            <option value="none">None</option>
+            <option value="basic">Basic Auth</option>
+            <option value="bearer">Bearer Token</option>
+            <option value="apikey">API Key</option>
+        </select>
+        <div id="authFields" class="auth-fields hidden"></div>
+
+        <!-- Headers Section -->
+        <label for="headers">Headers (Optional):</label>
+        <div class="key-value-section" id="headersSection">
+            <div class="key-value-pair">
+                <input type="text" placeholder="Key" class="header-key">
+                <input type="text" placeholder="Value" class="header-value">
+                <button type="button" class="remove-btn" onclick="removeHeader(this)">Remove</button>
+            </div>
+        </div>
+        <button type="button" class="add-btn" onclick="addHeader()">+ Add Header</button>
+
+        <!-- Body Section -->
+        <label for="body" id="bodyLabel" class="hidden">Request Body:</label>
+        <textarea id="body" class="hidden" placeholder='{
+    "key": "value"
+}'></textarea>
+
+        <label for="status">Expected Status:</label>
+        <select id="status">
+            <option value="">&lt;Please Select&gt;</option>
+            <option value="200">200 - OK</option>
+            <option value="201">201 - Created</option>
+            <option value="400">400 - Bad Request</option>
+            <option value="401">401 - Unauthorized</option>
+            <option value="403">403 - Forbidden</option>
+            <option value="404">404 - Not Found</option>
+            <option value="500">500 - Internal Server Error</option>
+        </select>
+
+        <div class="form-group">
+            <label for="validateSchema">Validate Schema:</label>
+            <input type="checkbox" id="validateSchema">
+            <span id="uploadSchemaText" class="upload-label disabled">Upload Schema File</span>
+            <input type="file" id="uploadSchema" accept=".json" style="display: none;">
+        </div>
+
+        <label for="threshold">Response Time Threshold (ms) (Optional):</label>
+        <input type="number" id="threshold" placeholder="Enter threshold e.g. 500">
+
+        <button class="submit-btn" id="analyzeBtn">Generate</button>
+
+        <div id="message" class="message"></div>
+    </div>
+
+    <script>
+        const methodSelect = document.getElementById('method');
+        const body = document.getElementById('body');
+        const bodyLabel = document.getElementById('bodyLabel');
+        const validateSchema = document.getElementById("validateSchema");
+        const uploadSchema = document.getElementById("uploadSchema");
+        const uploadSchemaText = document.getElementById("uploadSchemaText");
+        const authTypeSelect = document.getElementById('authType');
+        const authFields = document.getElementById('authFields');
+        const messageDiv = document.getElementById('message');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+
+        // Toggle body field based on method
+        methodSelect.addEventListener('change', () => {
+            const method = methodSelect.value;
+            if (method === 'POST' || method === 'PUT' || method === 'PATCH') {
+                body.classList.remove('hidden');
+                bodyLabel.classList.remove('hidden');
+            } else {
+                body.classList.add('hidden');
+                bodyLabel.classList.add('hidden');
+            }
+        });
+
+        // Authorization type change handler
+        authTypeSelect.addEventListener('change', () => {
+            const authType = authTypeSelect.value;
+            authFields.innerHTML = '';
+            
+            if (authType === 'none') {
+                authFields.classList.add('hidden');
+            } else {
+                authFields.classList.remove('hidden');
+                
+                if (authType === 'basic') {
+                    authFields.innerHTML = `
+                        <input type="text" id="username" placeholder="Username">
+                        <input type="password" id="password" placeholder="Password">
+                    `;
+                } else if (authType === 'bearer') {
+                    authFields.innerHTML = `
+                        <input type="text" id="bearerToken" placeholder="Bearer Token">
+                    `;
+                } else if (authType === 'apikey') {
+                    authFields.innerHTML = `
+                        <input type="text" id="apiKeyName" placeholder="API Key Name">
+                        <input type="text" id="apiKeyValue" placeholder="API Key Value">
+                    `;
+                }
+            }
+        });
+
+        // Params functions
+        function addParam() {
+            const paramsSection = document.getElementById('paramsSection');
+            const newPair = document.createElement('div');
+            newPair.className = 'key-value-pair';
+            newPair.innerHTML = `
+                <input type="text" placeholder="Key" class="param-key">
+                <input type="text" placeholder="Value" class="param-value">
+                <button type="button" class="remove-btn" onclick="removeParam(this)">Remove</button>
+            `;
+            paramsSection.appendChild(newPair);
+        }
+
+        function removeParam(button) {
+            const paramsSection = document.getElementById('paramsSection');
+            if (paramsSection.children.length > 1) {
+                button.parentElement.remove();
+            } else {
+                alert('At least one parameter field must remain.');
+            }
+        }
+
+        // Headers functions
+        function addHeader() {
+            const headersSection = document.getElementById('headersSection');
+            const newPair = document.createElement('div');
+            newPair.className = 'key-value-pair';
+            newPair.innerHTML = `
+                <input type="text" placeholder="Key" class="header-key">
+                <input type="text" placeholder="Value" class="header-value">
+                <button type="button" class="remove-btn" onclick="removeHeader(this)">Remove</button>
+            `;
+            headersSection.appendChild(newPair);
+        }
+
+        function removeHeader(button) {
+            const headersSection = document.getElementById('headersSection');
+            if (headersSection.children.length > 1) {
+                button.parentElement.remove();
+            } else {
+                alert('At least one header field must remain.');
+            }
+        }
+
+        // Schema upload functionality
+        uploadSchemaText.addEventListener("click", function () {
+            if (!validateSchema.checked) return;
+            uploadSchema.click();
+        });
+
+        validateSchema.addEventListener("change", function () {
+            if (this.checked) {
+                uploadSchemaText.classList.remove("disabled");
+            } else {
+                uploadSchemaText.classList.add("disabled");
+            }
+        });
+
+        // Helper function to show messages
+        function showMessage(text, type) {
+            messageDiv.textContent = text;
+            messageDiv.className = 'message ' + type;
+            messageDiv.style.display = 'block';
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Helper function to collect query parameters
+        function collectParams() {
+            const params = {};
+            const paramPairs = document.querySelectorAll('#paramsSection .key-value-pair');
+            
+            paramPairs.forEach(pair => {
+                const key = pair.querySelector('.param-key').value.trim();
+                const value = pair.querySelector('.param-value').value.trim();
+                if (key && value) {
+                    params[key] = value;
+                }
+            });
+            
+            return params;
+        }
+
+        // Helper function to collect headers
+        function collectHeaders() {
+            const headers = {};
+            const headerPairs = document.querySelectorAll('#headersSection .key-value-pair');
+            
+            headerPairs.forEach(pair => {
+                const key = pair.querySelector('.header-key').value.trim();
+                const value = pair.querySelector('.header-value').value.trim();
+                if (key && value) {
+                    headers[key] = value;
+                }
+            });
+            
+            return headers;
+        }
+
+        // Helper function to collect authorization data
+        function collectAuthData() {
+            const authType = authTypeSelect.value;
+            const authData = {
+                type: authType
+            };
+
+            if (authType === 'basic') {
+                authData.username = document.getElementById('username')?.value || '';
+                authData.password = document.getElementById('password')?.value || '';
+            } else if (authType === 'bearer') {
+                authData.token = document.getElementById('bearerToken')?.value || '';
+            } else if (authType === 'apikey') {
+                authData.keyName = document.getElementById('apiKeyName')?.value || '';
+                authData.keyValue = document.getElementById('apiKeyValue')?.value || '';
+            }
+
+            return authData;
+        }
+
+        // Main function to send data to backend
+        async function sendDataToBackend(formData) {
+            // REPLACE THIS URL WITH YOUR ACTUAL BACKEND API ENDPOINT
+            const backendUrl = 'http://localhost:8080/api/generate-test';
+            
+            try {
+                console.log('Sending data to backend:', formData);
+                
+                const response = await fetch(backendUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                console.log('Response status:', response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Error response:', errorText);
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('Backend response:', result);
+                
+                // Backend already returns {success, data}, so just return it directly
+                return result;
+            } catch (error) {
+                console.error('Fetch error:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        // Form validation and submission on Generate click
+        analyzeBtn.addEventListener('click', async () => {
+            const method = methodSelect.value;
+            const endpoint = document.getElementById('endpoint').value.trim();
+            const bodyValue = body.value.trim();
+            const expectedStatus = document.getElementById('status').value;
+
+            // Validation
+            if (!endpoint) {
+                alert('Please enter an endpoint URL.');
+                return;
+            }
+
+            if (!method) {
+                alert('Please select an HTTP method.');
+                return;
+            }
+
+            if ((method === 'POST' || method === 'PUT' || method === 'PATCH') && !bodyValue) {
+                alert('Request body cannot be empty for ' + method + ' method.');
+                return;
+            }
+
+            if (!expectedStatus) {
+                alert('Please select an expected status code.');
+                return;
+            }
+
+            // Disable button during processing
+            analyzeBtn.disabled = true;
+            analyzeBtn.textContent = 'Generating...';
+
+            // Collect all form data
+            const formData = {
+                method: method,
+                endpoint: endpoint,
+                queryParams: collectParams(),
+                authorization: collectAuthData(),
+                headers: collectHeaders(),
+                requestBody: bodyValue || null,
+                expectedStatus: parseInt(expectedStatus),
+                validateSchema: validateSchema.checked,
+                schemaFile: null, // Will be populated if file is uploaded
+                responseTimeThreshold: document.getElementById('threshold').value || null
+            };
+
+            // Handle schema file if uploaded
+            if (validateSchema.checked && uploadSchema.files.length > 0) {
+                const file = uploadSchema.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = async function(e) {
+                    try {
+                        formData.schemaFile = JSON.parse(e.target.result);
+                        
+                        // Send data to backend
+                        const result = await sendDataToBackend(formData);
+                        
+                        // Re-enable button
+                        analyzeBtn.disabled = false;
+                        analyzeBtn.textContent = 'Generate';
+                        
+                        if (result.success) {
+                            showMessage('Test generated successfully!', 'success');
+                            console.log('Backend response:', result.data);
+                            // You can add code here to download the generated file or display it
+                        } else {
+                            showMessage('Error: ' + result.error, 'error');
+                        }
+                    } catch (err) {
+                        analyzeBtn.disabled = false;
+                        analyzeBtn.textContent = 'Generate';
+                        showMessage('Error parsing schema file: ' + err.message, 'error');
+                    }
+                };
+                
+                reader.readAsText(file);
+            } else {
+                // No schema file, send data directly
+                const result = await sendDataToBackend(formData);
+                
+                // Re-enable button
+                analyzeBtn.disabled = false;
+                analyzeBtn.textContent = 'Generate';
+                
+                if (result.success) {
+                    // Store the generated data in sessionStorage
+                    const generatedData = {
+                        javaCode: result.data.javaCode,
+                        className: result.data.className,
+                        fileName: result.data.fileName,
+                        timestamp: result.data.timestamp
+                    };
+                    sessionStorage.setItem('generatedTestData', JSON.stringify(generatedData));
+                    
+                    // Redirect to result page
+                    window.location.href = 'result.html';
+                } else {
+                    showMessage('Error: ' + result.error, 'error');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

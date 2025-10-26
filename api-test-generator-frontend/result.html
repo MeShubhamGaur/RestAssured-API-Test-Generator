@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generated Test - RestAssured API Test Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            margin-top: 40px;
+            margin-bottom: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 30px 40px;
+            width: 700px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #0078d7;
+            margin-bottom: 10px;
+        }
+
+        .success-message {
+            text-align: center;
+            color: #28a745;
+            font-size: 16px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .info-section {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0078d7;
+        }
+
+        .info-item {
+            display: flex;
+            margin-bottom: 8px;
+        }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-label {
+            font-weight: 600;
+            margin-right: 10px;
+            color: #555;
+            min-width: 100px;
+        }
+
+        .info-value {
+            color: #333;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 400px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+            box-sizing: border-box;
+            background-color: #f8f9fa;
+            line-height: 1.5;
+        }
+
+        textarea:focus {
+            border-color: #0078d7;
+            outline: none;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .download-btn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .download-btn:hover {
+            background-color: #218838;
+        }
+
+        .copy-btn {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .copy-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .back-btn {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .back-btn:hover {
+            background-color: #5a6268;
+        }
+
+        .message {
+            padding: 10px 15px;
+            margin-top: 15px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-container {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .error-icon {
+            font-size: 48px;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+
+        .error-text {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>✅ Test Generated Successfully!</h1>
+        <p class="success-message">Your RestAssured API test has been generated</p>
+
+        <!-- File Info Section -->
+        <div class="info-section" id="infoSection">
+            <div class="info-item">
+                <span class="info-label">File Name:</span>
+                <span class="info-value" id="fileName">ApiTest.java</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Class Name:</span>
+                <span class="info-value" id="className">ApiTest</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Generated:</span>
+                <span class="info-value" id="timestamp">-</span>
+            </div>
+        </div>
+
+        <!-- Generated Code Display -->
+        <label for="codeDisplay">Generated Java Code:</label>
+        <textarea id="codeDisplay" readonly></textarea>
+
+        <!-- Action Buttons -->
+        <div class="button-group">
+            <button class="download-btn" id="downloadBtn">
+                📥 Download .java File
+            </button>
+            <button class="copy-btn" id="copyBtn">
+                📋 Copy to Clipboard
+            </button>
+            <button class="back-btn" id="backBtn">
+                ← Back to Form
+            </button>
+        </div>
+
+        <!-- Status Message -->
+        <div id="message" class="message"></div>
+
+        <!-- Error Container (hidden by default) -->
+        <div id="errorContainer" class="error-container" style="display: none;">
+            <div class="error-icon">⚠️</div>
+            <div class="error-text">No generated code found!</div>
+            <button class="back-btn" onclick="goBack()">← Go Back to Form</button>
+        </div>
+    </div>
+
+    <script>
+        // Get elements
+        const codeDisplay = document.getElementById('codeDisplay');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const backBtn = document.getElementById('backBtn');
+        const messageDiv = document.getElementById('message');
+        const fileNameSpan = document.getElementById('fileName');
+        const classNameSpan = document.getElementById('className');
+        const timestampSpan = document.getElementById('timestamp');
+        const infoSection = document.getElementById('infoSection');
+        const errorContainer = document.getElementById('errorContainer');
+
+        // Storage keys
+        const STORAGE_KEY = 'generatedTestData';
+
+        /**
+         * Show a temporary message to the user
+         */
+        function showMessage(text, type = 'success') {
+            messageDiv.textContent = text;
+            messageDiv.className = 'message ' + type;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        /**
+         * Format timestamp to readable date
+         */
+        function formatTimestamp(isoString) {
+            const date = new Date(isoString);
+            return date.toLocaleString();
+        }
+
+        /**
+         * Load the generated test data from sessionStorage
+         */
+        function loadGeneratedData() {
+            try {
+                console.log('Loading data from sessionStorage...');
+                
+                // Get data from sessionStorage
+                const dataString = sessionStorage.getItem(STORAGE_KEY);
+                
+                console.log('Raw data from sessionStorage:', dataString);
+                
+                if (!dataString) {
+                    console.error('No data found in sessionStorage');
+                    showError();
+                    return null;
+                }
+
+                const data = JSON.parse(dataString);
+                
+                console.log('Parsed data:', data);
+                
+                // Validate data structure
+                if (!data.javaCode || !data.className || !data.fileName) {
+                    console.error('Invalid data structure:', data);
+                    showError();
+                    return null;
+                }
+
+                return data;
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showError();
+                return null;
+            }
+        }
+
+        /**
+         * Show error state
+         */
+        function showError() {
+            infoSection.style.display = 'none';
+            codeDisplay.style.display = 'none';
+            document.querySelector('label[for="codeDisplay"]').style.display = 'none';
+            document.querySelector('.button-group').style.display = 'none';
+            document.querySelector('.success-message').style.display = 'none';
+            errorContainer.style.display = 'block';
+        }
+
+        /**
+         * Display the generated code and info
+         */
+        function displayGeneratedCode(data) {
+            // Set the code in textarea
+            codeDisplay.value = data.javaCode;
+
+            // Set file info
+            fileNameSpan.textContent = data.fileName;
+            classNameSpan.textContent = data.className;
+            
+            if (data.timestamp) {
+                timestampSpan.textContent = formatTimestamp(data.timestamp);
+            }
+        }
+
+        /**
+         * Download the Java file
+         */
+        function downloadJavaFile() {
+            const data = loadGeneratedData();
+            
+            if (!data) {
+                showMessage('Error: No code to download', 'error');
+                return;
+            }
+
+            // Create a Blob with the Java code
+            const blob = new Blob([data.javaCode], { type: 'text/plain' });
+            
+            // Create a temporary download link
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = data.fileName;
+            
+            // Trigger download
+            document.body.appendChild(link);
+            link.click();
+            
+            // Cleanup
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            
+            showMessage('✅ File downloaded successfully!');
+        }
+
+        /**
+         * Copy code to clipboard
+         */
+        function copyToClipboard() {
+            const code = codeDisplay.value;
+            
+            if (!code) {
+                showMessage('Error: No code to copy', 'error');
+                return;
+            }
+
+            // Use the Clipboard API
+            navigator.clipboard.writeText(code).then(() => {
+                showMessage('✅ Code copied to clipboard!');
+            }).catch(err => {
+                // Fallback method for older browsers
+                codeDisplay.select();
+                document.execCommand('copy');
+                showMessage('✅ Code copied to clipboard!');
+            });
+        }
+
+        /**
+         * Go back to the form page
+         */
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        // Event Listeners
+        downloadBtn.addEventListener('click', downloadJavaFile);
+        copyBtn.addEventListener('click', copyToClipboard);
+        backBtn.addEventListener('click', goBack);
+
+        // Initialize page on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const data = loadGeneratedData();
+            
+            if (data) {
+                displayGeneratedCode(data);
+            }
+        });
+    </script>
+</body>
+</html>
