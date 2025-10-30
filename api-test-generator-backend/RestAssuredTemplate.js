@@ -55,10 +55,10 @@ class RestAssuredTemplate {
             'import static org.hamcrest.Matchers.*;'
         ];
 
-        // Add schema validation import if needed
-        if (data.validateSchema) {
-            imports.push('import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchema;');
-        }
+        // // Add schema validation import if needed
+        // if (data.validateSchema) {
+        //     imports.push('import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchema;');
+        // }
 
         return imports.join('\n');
     }
@@ -148,13 +148,6 @@ ${testMethod}
         // Add response time assertion if provided
         if (data.responseTimeThreshold) {
             request += `${indent}    .time(lessThan(${data.responseTimeThreshold}L))\n`;
-        }
-        
-        // Add schema validation if enabled
-        if (data.validateSchema && data.schemaFile) {
-            const schemaJson = JSON.stringify(data.schemaFile);
-            const escapedSchema = schemaJson.replace(/"/g, '\\"');
-            request += `${indent}    .body(matchesJsonSchema("${escapedSchema}"))\n`;
         }
         
         // Extract and log response

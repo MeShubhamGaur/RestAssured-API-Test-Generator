@@ -124,32 +124,6 @@
             display: none;
         }
 
-        .schema-upload {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 5px;
-        }
-
-        .schema-upload input[type="file"] {
-            display: none;
-        }
-
-        .upload-label {
-            margin-left: 10px;
-            color: #007BFF;
-            text-decoration: underline;
-            cursor: pointer;
-            transition: opacity 0.3s ease;
-        }
-
-        .upload-label.disabled {
-            color: gray;
-            text-decoration: none;
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
         button.submit-btn {
             width: 100%;
             margin-top: 25px;
@@ -266,13 +240,6 @@
             <option value="500">500 - Internal Server Error</option>
         </select>
 
-        <div class="form-group">
-            <label for="validateSchema">Validate Schema:</label>
-            <input type="checkbox" id="validateSchema">
-            <span id="uploadSchemaText" class="upload-label disabled">Upload Schema File</span>
-            <input type="file" id="uploadSchema" accept=".json" style="display: none;">
-        </div>
-
         <label for="threshold">Response Time Threshold (ms) (Optional):</label>
         <input type="number" id="threshold" placeholder="Enter threshold e.g. 500">
 
@@ -285,9 +252,6 @@
         const methodSelect = document.getElementById('method');
         const body = document.getElementById('body');
         const bodyLabel = document.getElementById('bodyLabel');
-        const validateSchema = document.getElementById("validateSchema");
-        const uploadSchema = document.getElementById("uploadSchema");
-        const uploadSchemaText = document.getElementById("uploadSchemaText");
         const authTypeSelect = document.getElementById('authType');
         const authFields = document.getElementById('authFields');
         const messageDiv = document.getElementById('message');
@@ -376,20 +340,6 @@
                 alert('At least one header field must remain.');
             }
         }
-
-        // Schema upload functionality
-        uploadSchemaText.addEventListener("click", function () {
-            if (!validateSchema.checked) return;
-            uploadSchema.click();
-        });
-
-        validateSchema.addEventListener("change", function () {
-            if (this.checked) {
-                uploadSchemaText.classList.remove("disabled");
-            } else {
-                uploadSchemaText.classList.add("disabled");
-            }
-        });
 
         // Helper function to show messages
         function showMessage(text, type) {
@@ -482,7 +432,6 @@
                 const result = await response.json();
                 console.log('Backend response:', result);
                 
-                // Backend already returns {success, data}, so just return it directly
                 return result;
             } catch (error) {
                 console.error('Fetch error:', error);
@@ -531,65 +480,30 @@
                 headers: collectHeaders(),
                 requestBody: bodyValue || null,
                 expectedStatus: parseInt(expectedStatus),
-                validateSchema: validateSchema.checked,
-                schemaFile: null, // Will be populated if file is uploaded
                 responseTimeThreshold: document.getElementById('threshold').value || null
             };
 
-            // Handle schema file if uploaded
-            if (validateSchema.checked && uploadSchema.files.length > 0) {
-                const file = uploadSchema.files[0];
-                const reader = new FileReader();
-                
-                reader.onload = async function(e) {
-                    try {
-                        formData.schemaFile = JSON.parse(e.target.result);
-                        
-                        // Send data to backend
-                        const result = await sendDataToBackend(formData);
-                        
-                        // Re-enable button
-                        analyzeBtn.disabled = false;
-                        analyzeBtn.textContent = 'Generate';
-                        
-                        if (result.success) {
-                            showMessage('Test generated successfully!', 'success');
-                            console.log('Backend response:', result.data);
-                            // You can add code here to download the generated file or display it
-                        } else {
-                            showMessage('Error: ' + result.error, 'error');
-                        }
-                    } catch (err) {
-                        analyzeBtn.disabled = false;
-                        analyzeBtn.textContent = 'Generate';
-                        showMessage('Error parsing schema file: ' + err.message, 'error');
-                    }
+            // Send data to backend
+            const result = await sendDataToBackend(formData);
+            
+            // Re-enable button
+            analyzeBtn.disabled = false;
+            analyzeBtn.textContent = 'Generate';
+            
+            if (result.success) {
+                // Store the generated data in sessionStorage
+                const generatedData = {
+                    javaCode: result.data.javaCode,
+                    className: result.data.className,
+                    fileName: result.data.fileName,
+                    timestamp: result.data.timestamp
                 };
+                sessionStorage.setItem('generatedTestData', JSON.stringify(generatedData));
                 
-                reader.readAsText(file);
+                // Redirect to result page
+                window.location.href = 'result.html';
             } else {
-                // No schema file, send data directly
-                const result = await sendDataToBackend(formData);
-                
-                // Re-enable button
-                analyzeBtn.disabled = false;
-                analyzeBtn.textContent = 'Generate';
-                
-                if (result.success) {
-                    // Store the generated data in sessionStorage
-                    const generatedData = {
-                        javaCode: result.data.javaCode,
-                        className: result.data.className,
-                        fileName: result.data.fileName,
-                        timestamp: result.data.timestamp
-                    };
-                    sessionStorage.setItem('generatedTestData', JSON.stringify(generatedData));
-                    
-                    // Redirect to result page
-                    window.location.href = 'result.html';
-                } else {
-                    showMessage('Error: ' + result.error, 'error');
-                }
+                showMessage('Error: ' + result.error, 'error');
             }
         });
     </script>

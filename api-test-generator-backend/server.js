@@ -53,7 +53,6 @@ app.post('/api/generate-test', (req, res) => {
         console.log('Headers:', formData.headers);
         console.log('Request Body:', formData.requestBody);
         console.log('Expected Status:', formData.expectedStatus);
-        console.log('Validate Schema:', formData.validateSchema);
         console.log('Response Time Threshold:', formData.responseTimeThreshold);
         console.log('=================================\n');
 
@@ -97,14 +96,6 @@ app.post('/api/generate-test', (req, res) => {
                     error: 'Request body must be valid JSON'
                 });
             }
-        }
-
-        // If schema validation is enabled, check if schema file exists
-        if (formData.validateSchema && !formData.schemaFile) {
-            return res.status(400).json({
-                success: false,
-                error: 'Schema file is required when schema validation is enabled'
-            });
         }
 
         // ============================================
