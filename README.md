@@ -194,7 +194,7 @@ The following features are planned for future releases:
 👤 Contact
 
     GitHub: @MeShubhamGaur
-    LinkedIn: Shubham Gaur
+    LinkedIn: https://www.linkedin.com/in/shubham-gaur-25078123a
     Email: shubhamgaur22091999@gmail.com
     
 ⭐ Support
